@@ -1,7 +1,6 @@
 package com.group3.BilliardManagementSystem.Entity;
 
 
-import com.group3.BilliardManagementSystem.Entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,6 +37,7 @@ import java.time.LocalDateTime;
 public class SessionTimeLog extends BaseEntity {
 
     @Id
+    @Column(name = "log_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

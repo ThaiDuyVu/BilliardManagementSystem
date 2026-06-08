@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users</title>
+</head>
+<body>
+
+<h2>User List</h2>
+
+<button onclick="loadUsers()">Load Users</button>
+
+<pre id="result"></pre>
+
+<script>
+    async function loadUsers() {
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/users", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (!res.ok) {
+            document.getElementById("result").innerText =
+                "Error: " + res.status;
+            return;
+        }
+
+        const data = await res.json();
+
+        document.getElementById("result").innerText =
+            JSON.stringify(data, null, 2);
+    }
+</script>
+
+</body>
+</html>

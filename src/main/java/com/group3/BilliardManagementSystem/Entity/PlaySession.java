@@ -1,6 +1,5 @@
 package com.group3.BilliardManagementSystem.Entity;
 
-import com.group3.BilliardManagementSystem.Entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,6 +36,7 @@ import java.util.List;
 public class PlaySession extends BaseEntity {
 
     @Id
+    @Column(name = "session_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -93,7 +93,7 @@ public class PlaySession extends BaseEntity {
      */
     @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<com.group3.BilliardManagementSystem.Entity.Order> orders = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 
     public enum SessionStatus {
         ACTIVE,   // Timer running

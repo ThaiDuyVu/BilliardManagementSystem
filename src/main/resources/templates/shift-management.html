@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Shift Management</title>
+</head>
+<body>
+
+<h1>SHIFT MANAGEMENT</h1>
+
+<hr>
+
+<h2>Create Shift</h2>
+
+<input id="shiftName" placeholder="Shift Name">
+<br><br>
+
+<input id="startTime" type="time">
+<br><br>
+
+<input id="endTime" type="time">
+<br><br>
+
+<input id="maxEmployees" type="number" placeholder="Max Employees">
+<br><br>
+
+<select id="branchSelect"></select>
+
+<br><br>
+
+<button onclick="createShift()">
+    Create Shift
+</button>
+
+<hr>
+
+<h2>View Shifts By Branch</h2>
+
+<select id="branchShiftSelect"></select>
+
+<button onclick="loadShifts()">
+    Load Shifts
+</button>
+
+<br><br>
+
+<div id="shiftList"></div>
+
+<script>
+
+    async function loadBranches() {
+
+        const res = await fetch("/api/branches");
+        const branches = await res.json();
+
+        ["branchSelect", "branchShiftSelect"]
+            .forEach(id => {
+
+                const select =
+                    document.getElementById(id);
+
+                select.innerHTML = "";
+
+                branches.forEach(branch => {
+
+                    select.innerHTML += `
+                    <option value="${branch.id}">
+                        ${branch.name}
+                    </option>
+                `;
+                });
+            });
+    }
+
+    async function createShift() {
+
+        const body = {
+
+            name:
+            document.getElementById("shiftName").value,
+
+            startTime:
+            document.getElementById("startTime").value,
+
+            endTime:
+            document.getElementById("endTime").value,
+
+            maxEmployees:
+                parseInt(
+                    document.getElementById("maxEmployees").value
+                ),
+
+            branchId:
+                parseInt(
+                    document.getElementById("branchSelect").value
+                )
+        };
+
+        const res =
+            await fetch("/api/shifts", {
+
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(body)
+            });
+
+        alert(await res.text());
+    }
+
+    async function loadShifts() {
+
+        const branchId =
+            document.getElementById(
+                "branchShiftSelect"
+            ).value;
+
+        const res =
+            await fetch(
+                "/api/shifts/branch/" + branchId
+            );
+
+        const shifts =
+            await res.json();
+
+        let html = "";
+
+        shifts.forEach(s => {
+
+            html += `
+            <div>
+                ${s.id}
+                -
+                ${s.name}
+                -
+                ${s.startTime}
+                →
+                ${s.endTime}
+                -
+                Max:
+                ${s.maxEmployees}
+            </div>
+        `;
+        });
+
+        document.getElementById("shiftList")
+            .innerHTML = html;
+    }
+
+    loadBranches();
+
+</script>
+
+</body>
+</html>

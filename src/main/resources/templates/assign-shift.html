@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Assign Shift</title>
+
+    ```
+    <style>
+
+        body{
+            font-family: Arial, sans-serif;
+            margin:20px;
+        }
+
+        .container{
+            display:flex;
+            gap:30px;
+            align-items:flex-start;
+        }
+
+        .left-panel{
+            width:350px;
+            border:1px solid #ccc;
+            padding:15px;
+            border-radius:8px;
+        }
+
+        .center-panel{
+            flex:1;
+            border:1px solid #ccc;
+            padding:15px;
+            border-radius:8px;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        table th,
+        table td{
+            border:1px solid #ddd;
+            padding:8px;
+        }
+
+        table th{
+            background:#f5f5f5;
+        }
+        .schedule-wrapper{
+
+            width:100%;
+
+            overflow-x:auto;
+        }
+        input,
+        select,
+        button{
+            margin-top:8px;
+            margin-bottom:8px;
+            width:100%;
+            padding:8px;
+        }
+
+        button{
+            cursor:pointer;
+        }
+        .week-container{
+            display:grid;
+
+            grid-template-columns:
+        repeat(auto-fit,minmax(140px,1fr));
+
+            gap:8px;
+
+            width:100%;
+        }
+
+        .day-card{
+            border:1px solid #ddd;
+            border-radius:6px;
+
+            padding:6px;
+
+            min-height:180px;
+
+            overflow:hidden;
+        }
+
+        .day-title{
+
+            font-size:12px;
+
+            font-weight:bold;
+
+            text-align:center;
+
+            padding:4px;
+
+            margin-bottom:6px;
+
+            background:#f5f5f5;
+
+            border-radius:4px;
+        }
+
+        .shift-card{
+            border:1px solid #ddd;
+            border-radius:6px;
+            padding:6px;
+            margin-bottom:8px;
+            background:white;
+        }
+
+        .shift-name{
+            font-weight:bold;
+            color:#1976d2;
+        }
+        .employee-container{
+            border:1px solid #ddd;
+            padding:10px;
+            max-height:300px;
+            overflow-y:auto;
+            background:white;
+        }
+        .shift-group{
+            margin-bottom:20px;
+        }
+
+        .shift-title{
+            font-size:20px;
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        .shift-cards{
+
+            border-left:3px solid #1976d2;
+
+            background:#fafafa;
+
+            margin-bottom:4px;
+
+            padding:4px;
+
+            border-radius:4px;
+        }
+        .assignment-card{
+
+            width:240px;
+
+            border:1px solid #ddd;
+
+            border-radius:8px;
+
+            padding:10px;
+
+            background:white;
+
+            box-shadow:
+                    0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .assignment-card h4{
+            margin:0 0 10px 0;
+        }
+
+        .assignment-card p{
+            margin:4px 0;
+        }
+
+        .assignment-actions{
+            margin-top:10px;
+        }
+
+        .assignment-actions button{
+            margin-right:5px;
+        }
+        .employee-row{
+            display:flex;
+            align-items:center;
+            gap:10px;
+
+            padding:6px;
+            border-bottom:1px solid #eee;
+        }
+
+        .employee-row:hover{
+            background:#f5f5f5;
+        }
+        .schedule-group{
+            margin-bottom:25px;
+        }
+
+        .schedule-title{
+            background:#2c3e50;
+            color:white;
+            padding:10px;
+            font-weight:bold;
+            border-radius:5px;
+        }
+
+        .assignment-card{
+            border:1px solid #ddd;
+            padding:10px;
+            margin:8px 0;
+            border-radius:5px;
+            background:white;
+        }
+
+        .assignment-card button{
+            margin-right:5px;
+        }
+        .employee-row input[type="checkbox"]{
+            width:18px;
+            height:18px;
+            cursor:pointer;
+            margin:0;
+        }
+
+        .employee-row span{
+            font-size:14px;
+        }
+        .week-assignment-card{
+
+            border:1px solid #ddd;
+
+            border-radius:6px;
+
+            padding:6px;
+
+            margin-bottom:4px;
+
+            background:white;
+
+            transition:0.2s;
+
+            overflow:hidden;
+        }
+
+        .week-assignment-card:hover{
+
+            background:#f8f9fa;
+        }
+
+        .week-employee{
+
+            font-size:12px;
+
+            font-weight:600;
+
+            margin-bottom:4px;
+
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+
+        .week-info{
+
+            display:flex;
+
+            justify-content:space-between;
+
+            align-items:center;
+
+            gap:4px;
+
+            font-size:10px;
+        }
+
+        .week-shift{
+
+            color:#1976d2;
+
+            font-weight:bold;
+        }
+
+        .week-time{
+
+            color:#666;
+        }
+        /* ================= MODAL ================= */
+
+        .modal{
+
+            display:none;
+
+            position:fixed;
+            top:0;
+            left:0;
+
+            width:100%;
+            height:100%;
+
+            background:rgba(0,0,0,0.5);
+
+            justify-content:center;
+            align-items:center;
+
+            z-index:9999;
+        }
+
+        .modal-content{
+
+            background:white;
+
+            padding:25px;
+
+            border-radius:8px;
+
+            min-width:450px;
+
+            box-shadow:0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-buttons{
+            display:flex;
+            gap:10px;
+            margin-top:15px;
+        }
+
+    </style>
+    ```
+
+</head>
+
+<body>
+
+<h1>ASSIGN SHIFT</h1>
+
+<div class="container">
+
+    ```
+    <!-- LEFT -->
+    <div class="left-panel">
+
+        <h3>Select Branch</h3>
+
+        <select id="branchSelect"></select>
+
+        <button onclick="loadData()">
+            Load Data
+        </button>
+
+        <hr>
+
+        <h3>Assign Employees</h3>
+
+        <label>Shift</label>
+
+        <select id="shiftSelect"></select>
+
+        <label>Date</label>
+
+        <input id="workDate" type="date">
+
+        <label>Note</label>
+
+        <input id="note">
+
+        <h4>Employees</h4>
+
+        <div
+                id="employeeContainer"
+                class="employee-container">
+        </div>
+
+        <button onclick="assignEmployees()">
+            Assign Employees
+        </button>
+
+    </div>
+
+    <!-- CENTER -->
+    <div class="center-panel">
+
+        <h2>Assignment Lookup</h2>
+
+        <label>View Mode</label>
+
+        <select id="viewMode" onchange="changeViewMode()">
+            <option value="day">Day View</option>
+            <option value="week">Week View</option>
+        </select>
+
+        <br><br>
+
+        <div id="dayPicker">
+            <input id="searchDate" type="date">
+        </div>
+
+        <div id="weekPicker" style="display:none;">
+            <input id="weekStartDate" type="date">
+        </div>
+
+        <br>
+
+        <button onclick="loadAssignments()">
+            Load Assignments
+        </button>
+
+
+        <br><br>
+
+
+        <br><br>
+
+        <div class="schedule-wrapper">
+
+            <div id="assignmentTable"></div>
+
+        </div>
+
+    </div>
+    ```
+
+</div>
+
+<!-- ================= EDIT MODAL ================= -->
+
+<div id="editModal" class="modal">
+
+    ```
+    <div class="modal-content">
+
+        <h2>Update Assignment</h2>
+
+        <input
+                id="editAssignmentId"
+                type="hidden">
+
+        <label>Shift</label>
+
+        <select id="editShiftSelect"></select>
+
+        <label>Date</label>
+
+        <input
+                id="editWorkDate"
+                type="date">
+
+        <label>Note</label>
+
+        <input id="editNote">
+
+        <div class="modal-buttons">
+
+            <button onclick="updateAssignment()">
+                Update
+            </button>
+
+            <button onclick="closeModal()">
+                Close
+            </button>
+
+        </div>
+
+    </div>
+    ```
+
+</div>
+
+<script>
+    function toggleViewMode() {
+
+        const mode =
+            document.getElementById("viewMode").value;
+
+        if(mode === "day"){
+
+            document.getElementById(
+                "dayFilter"
+            ).style.display = "block";
+
+            document.getElementById(
+                "weekFilter"
+            ).style.display = "none";
+        }
+        else{
+
+            document.getElementById(
+                "dayFilter"
+            ).style.display = "none";
+
+            document.getElementById(
+                "weekFilter"
+            ).style.display = "block";
+        }
+    }
+    async function loadBranches() {
+
+        const res =
+            await fetch("/api/branches");
+
+        const branches =
+            await res.json();
+
+        const select =
+            document.getElementById("branchSelect");
+
+        select.innerHTML = "";
+
+        branches.forEach(branch => {
+
+            select.innerHTML += `
+                <option value="${branch.id}">
+                    ${branch.name}
+                </option>
+            `;
+        });
+    }
+
+    async function loadData() {
+
+        const branchId =
+            document.getElementById("branchSelect").value;
+
+        await loadShifts(branchId);
+        await loadEmployees(branchId);
+    }
+
+    async function loadShifts(branchId) {
+
+        const res =
+            await fetch("/api/shifts/branch/" + branchId);
+
+        const shifts =
+            await res.json();
+
+        const createSelect =
+            document.getElementById("shiftSelect");
+
+        const editSelect =
+            document.getElementById("editShiftSelect");
+
+        createSelect.innerHTML = "";
+        editSelect.innerHTML = "";
+
+        shifts.forEach(shift => {
+
+            const option = `
+                <option value="${shift.id}">
+                    ${shift.name}
+                </option>
+            `;
+
+            createSelect.innerHTML += option;
+            editSelect.innerHTML += option;
+        });
+    }
+
+    async function loadEmployees(branchId) {
+
+        const res =
+            await fetch(
+                "/api/hr/employees/branch/" + branchId
+            );
+
+        const employees =
+            await res.json();
+
+        let html = "";
+
+        employees.forEach(employee => {
+
+            html += `
+            <div class="employee-row">
+
+                <input
+                    type="checkbox"
+                    value="${employee.id}">
+
+                <span>
+                    ${employee.fullName}
+                </span>
+
+            </div>
+        `;
+        });
+
+        document.getElementById(
+            "employeeContainer"
+        ).innerHTML = html;
+    }
+
+    async function assignEmployees() {
+
+        const employeeIds =
+            Array.from(
+                document.querySelectorAll(
+                    "#employeeContainer input:checked"
+                )
+            ).map(x => parseInt(x.value));
+
+        const body = {
+
+            employeeIds,
+
+            shiftId:
+                parseInt(
+                    document.getElementById(
+                        "shiftSelect"
+                    ).value
+                ),
+
+            workDate:
+            document.getElementById(
+                "workDate"
+            ).value,
+
+            note:
+            document.getElementById(
+                "note"
+            ).value
+        };
+
+        const res =
+            await fetch(
+                "/api/shifts/assign-multiple",
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/json"
+                    },
+                    body:JSON.stringify(body)
+                }
+            );
+
+        alert(await res.text());
+    }
+    function changeViewMode() {
+
+        const mode =
+            document.getElementById("viewMode").value;
+
+        if(mode === "day") {
+
+            document.getElementById("dayPicker").style.display = "block";
+            document.getElementById("weekPicker").style.display = "none";
+
+        } else {
+
+            document.getElementById("dayPicker").style.display = "none";
+            document.getElementById("weekPicker").style.display = "block";
+        }
+    }
+    function renderGroup(title, assignments){
+
+        let html = `
+        <div class="shift-group">
+
+            <div class="shift-title">
+                ${title}
+            </div>
+
+            <div class="shift-cards">
+    `;
+
+        assignments.forEach(a => {
+
+            html += `
+
+            <div class="assignment-card">
+
+                <h4>
+                    ${a.employeeName}
+                </h4>
+
+                <p>
+                    Shift:
+                    ${a.shiftName}
+                </p>
+
+                <p>
+                    Time:
+                    ${a.shiftStartTime}
+                    -
+                    ${a.shiftEndTime}
+                </p>
+
+                <p>
+                    Status:
+                    ${a.status}
+                </p>
+
+                <p>
+                    Note:
+                    ${a.note || "-"}
+                </p>
+
+                <div class="assignment-actions">
+
+                    <button
+                        onclick="editAssignment(
+                            ${a.id},
+                            ${a.shiftId},
+                            '${a.workDate}',
+                            '${a.note || ""}'
+                        )">
+                        Edit
+                    </button>
+
+                    <button
+                        onclick="cancelAssignment(${a.id})">
+                        Cancel
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+        });
+
+        html += `
+            </div>
+        </div>
+    `;
+
+        return html;
+    }
+    function renderWeekGroup(title, assignments){
+
+        if(assignments.length === 0){
+            return "";
+        }
+
+        let html = `
+        <div class="shift-group">
+
+            <div class="shift-title">
+                ${title}
+            </div>
+
+            <div class="shift-cards">
+    `;
+
+        assignments.forEach(a => {
+
+            html += `
+
+            <div class="week-assignment-card">
+
+                <div class="week-employee">
+                    ${a.employeeName}
+                </div>
+
+                <div class="week-info">
+
+                    <span class="week-shift">
+                        ${a.shiftName}
+                    </span>
+
+                    <span class="week-time">
+                        ${a.shiftStartTime}
+                        -
+                        ${a.shiftEndTime}
+                    </span>
+
+                </div>
+
+            </div>
+
+        `;
+        });
+
+        html += `
+            </div>
+        </div>
+    `;
+
+        return html;
+    }
+    async function loadDayAssignments() {
+
+        const branchId =
+            document.getElementById("branchSelect").value;
+
+        const date =
+            document.getElementById("searchDate").value;
+
+        const res =
+            await fetch(
+                `/api/shifts/schedule?branchId=${branchId}&date=${date}`
+            );
+
+        const data =
+            await res.json();
+
+
+        const grouped =
+            groupByPeriod(data);
+        let html = "";
+
+        html += renderGroup(
+            "🌅 MORNING SHIFTS",
+            grouped.morning
+        );
+
+        html += renderGroup(
+            "☀️ AFTERNOON SHIFTS",
+            grouped.afternoon
+        );
+
+        html += renderGroup(
+            "🌙 EVENING SHIFTS",
+            grouped.evening
+        );
+
+        document.getElementById(
+            "assignmentTable"
+        ).innerHTML = html;
+    }
+    function groupByPeriod(assignments){
+
+        const morning = [];
+        const afternoon = [];
+        const evening = [];
+
+        assignments.forEach(a => {
+
+            const hour =
+                parseInt(
+                    a.shiftStartTime.split(":")[0]
+                );
+
+            if(hour < 9){
+                morning.push(a);
+            }
+            else if(hour < 15){
+                afternoon.push(a);
+            }
+            else{
+                evening.push(a);
+            }
+        });
+
+        return {
+            morning,
+            afternoon,
+            evening
+        };
+    }
+    function renderGroup(
+        title,
+        assignments
+    ){
+
+        if(assignments.length === 0){
+            return "";
+        }
+
+        let html = `
+        <div class="schedule-group">
+            <div class="schedule-title">
+                ${title}
+            </div>
+    `;
+
+        assignments.forEach(a => {
+
+            html += `
+            <div class="assignment-card">
+
+                <b>${a.shiftName}</b>
+
+                <br>
+
+                Employee:
+                ${a.employeeName}
+
+                <br>
+
+                Status:
+                ${a.status}
+
+                <br><br>
+
+                <button
+                    onclick="editAssignment(
+                        ${a.id},
+                        ${a.shiftId},
+                        '${a.workDate}',
+                        '${a.note || ""}'
+                    )">
+
+                    Edit
+
+                </button>
+
+                <button
+                    onclick="cancelAssignment(${a.id})">
+
+                    Cancel
+
+                </button>
+
+            </div>
+        `;
+        });
+
+        html += "</div>";
+
+        return html;
+    }
+    function editAssignment(
+        id,
+        shiftId,
+        workDate,
+        note
+    ) {
+
+        document.getElementById(
+            "editAssignmentId"
+        ).value = id;
+
+        document.getElementById(
+            "editShiftSelect"
+        ).value = shiftId;
+
+        document.getElementById(
+            "editWorkDate"
+        ).value = workDate;
+
+        document.getElementById(
+            "editNote"
+        ).value = note;
+
+        document.getElementById(
+            "editModal"
+        ).style.display = "flex";
+    }
+
+    function closeModal() {
+
+        document.getElementById(
+            "editModal"
+        ).style.display = "none";
+    }
+
+    async function updateAssignment() {
+
+        const id =
+            document.getElementById(
+                "editAssignmentId"
+            ).value;
+
+        const body = {
+
+            shiftId:
+                parseInt(
+                    document.getElementById(
+                        "editShiftSelect"
+                    ).value
+                ),
+
+            workDate:
+            document.getElementById(
+                "editWorkDate"
+            ).value,
+
+            note:
+            document.getElementById(
+                "editNote"
+            ).value
+        };
+
+        await fetch(
+            "/api/shifts/assignment/" + id,
+            {
+                method:"PUT",
+                headers:{
+                    "Content-Type":"application/json"
+                },
+                body:JSON.stringify(body)
+            }
+        );
+
+        alert("Updated");
+
+        closeModal();
+
+        loadAssignments();
+    }
+    async function loadAssignments() {
+
+        const mode =
+            document.getElementById("viewMode").value;
+
+        if(mode === "day") {
+
+            await loadDayAssignments();
+
+        } else {
+
+            await loadWeekAssignments();
+        }
+    }
+    async function loadWeekAssignments() {
+
+        const branchId =
+            document.getElementById("branchSelect").value;
+
+        const startDate =
+            document.getElementById("weekStartDate").value;
+
+        const res =
+            await fetch(
+                `/api/shifts/schedule/week?branchId=${branchId}&startDate=${startDate}`
+            );
+
+        const data =
+            await res.json();
+
+        const days = {};
+
+        data.forEach(item => {
+
+            if(!days[item.workDate]){
+                days[item.workDate] = [];
+            }
+
+            days[item.workDate].push(item);
+        });
+
+        let html =
+            `<div class="week-container">`;
+
+        for(let i=0;i<7;i++){
+
+            const current =
+                new Date(startDate);
+
+            current.setDate(
+                current.getDate() + i
+            );
+
+            const dateKey =
+                current.toISOString()
+                    .split("T")[0];
+
+            const assignments =
+                days[dateKey] || [];
+
+            const grouped =
+                groupByPeriod(assignments);
+
+            html += `
+<div class="day-card">
+
+    <div class="day-title">
+        ${dateKey}
+    </div>
+`;
+
+            if(assignments.length === 0){
+
+                html += `
+        <div>No Assignment</div>
+    `;
+            }
+            else{
+
+                html += renderWeekGroup(
+                    "🌅 Morning",
+                    grouped.morning
+                );
+
+                html += renderWeekGroup(
+                    "☀️ Afternoon",
+                    grouped.afternoon
+                );
+
+                html += renderWeekGroup(
+                    "🌙 Evening",
+                    grouped.evening
+                );
+            }
+
+            html += `
+            </div>
+        `;
+        }
+
+        html += "</div>";
+
+        document.getElementById(
+            "assignmentTable"
+        ).innerHTML = html;
+    }
+    async function cancelAssignment(id) {
+
+        await fetch(
+            "/api/shifts/assignment/" +
+            id +
+            "/cancel",
+            {
+                method:"PUT"
+            }
+        );
+
+        alert("Cancelled");
+
+        loadAssignments();
+    }
+
+    loadBranches();
+
+</script>
+
+</body>
+</html>

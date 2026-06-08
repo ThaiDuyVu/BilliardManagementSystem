@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Employee</title>
+</head>
+
+<body>
+
+<h2>Create Employee</h2>
+
+<!-- USER DROPDOWN -->
+<select id="userId"></select>
+
+<!-- BRANCH DROPDOWN -->
+<select id="branchId"></select>
+
+<!-- EMPLOYMENT TYPE -->
+<select id="employmentType">
+    <option value="FULL_TIME">FULL_TIME</option>
+    <option value="PART_TIME">PART_TIME</option>
+</select>
+
+<!-- SALARY -->
+<input id="baseSalary" type="number" placeholder="Salary"/>
+
+<button onclick="createEmployee()">Create</button>
+
+<p id="message"></p>
+
+<script>
+
+    async function loadUsers() {
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/users/not-employee", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const users = await res.json();
+
+        const userSelect = document.getElementById("userId");
+
+        userSelect.innerHTML = "";
+
+        users.forEach(u => {
+            userSelect.innerHTML += `
+            <option value="${u.id}">
+                ${u.username} - ${u.email}
+            </option>
+        `;
+        });
+    }
+
+    // Load branches
+    async function loadBranches() {
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("/api/branches", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        const branches = await res.json();
+
+        const branchSelect = document.getElementById("branchId");
+
+        branchSelect.innerHTML = "";
+
+        branches.forEach(b => {
+            branchSelect.innerHTML += `
+            <option value="${b.id}">
+                ${b.name}
+            </option>
+        `;
+        });
+    }
+
+    // CREATE EMPLOYEE
+    async function createEmployee() {
+
+        const token = localStorage.getItem("token");
+
+        const body = {
+            userId: document.getElementById("userId").value,
+            branchId: document.getElementById("branchId").value,
+            employmentType: document.getElementById("employmentType").value,
+            baseSalary: document.getElementById("baseSalary").value
+        };
+
+        const res = await fetch("/api/hr/employees", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+            },
+            body: JSON.stringify(body)
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            document.getElementById("message").innerText = "Error: " + data.message;
+            return;
+        }
+
+        document.getElementById("message").innerText =
+            "Created Employee ID: " + data.id;
+    }
+
+    loadUsers();
+    loadBranches();
+
+</script>
+
+</body>
+</html>

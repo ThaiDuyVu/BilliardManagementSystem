@@ -1,6 +1,5 @@
 package com.group3.BilliardManagementSystem.Entity;
 
-import com.group3.BilliardManagementSystem.Entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,7 +12,9 @@ import java.util.List;
  * Shift assignments link employees to specific dates using this template.
  */
 @Entity
-@Table(name = "shifts")
+@Table(
+        name = "shifts"
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,11 +39,15 @@ public class Shift extends BaseEntity {
     @Column(name = "overnight", nullable = false)
     @Builder.Default
     private boolean overnight = false;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean active = true;
 
+    @Column(name = "max_employees")
+    private Integer maxEmployees;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
-
     @OneToMany(mappedBy = "shift", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ShiftAssignment> assignments = new ArrayList<>();

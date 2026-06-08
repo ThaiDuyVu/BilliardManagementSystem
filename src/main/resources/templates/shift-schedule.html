@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Shift Schedule</title>
+</head>
+<body>
+
+<h1>VIEW SHIFT SCHEDULE</h1>
+
+<hr>
+
+<select id="scheduleBranch"></select>
+
+<input id="scheduleDate" type="date">
+
+<button onclick="loadSchedule()">
+    View Schedule
+</button>
+
+<br><br>
+
+<table border="1" cellpadding="5">
+
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Employee</th>
+        <th>Shift</th>
+        <th>Date</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+
+    <tbody id="scheduleTable"></tbody>
+
+</table>
+
+<script>
+
+    async function loadBranches() {
+
+        const res = await fetch("/api/branches");
+        const branches = await res.json();
+
+        const select = document.getElementById("scheduleBranch");
+        select.innerHTML = "";
+
+        branches.forEach(b => {
+            select.innerHTML += `
+                <option value="${b.id}">
+                    ${b.name}
+                </option>`;
+        });
+    }
+
+    async function loadSchedule() {
+
+        const branchId = document.getElementById("scheduleBranch").value;
+        const date = document.getElementById("scheduleDate").value;
+
+        const res = await fetch(
+            `/api/shifts/schedule?branchId=${branchId}&date=${date}`
+        );
+
+        const data = await res.json();
+
+        let html = "";
+
+        data.forEach(a => {
+            html += `
+                <tr>
+                    <td>${a.id}</td>
+                    <td>${a.employeeName}</td>
+                    <td>${a.shiftName}</td>
+                    <td>${a.workDate}</td>
+                    <td>${a.status}</td>
+                    <td>
+                        <button onclick="cancelAssignment(${a.id})">
+                            Cancel
+                        </button>
+                    </td>
+                </tr>`;
+        });
+
+        document.getElementById("scheduleTable").innerHTML = html;
+    }
+
+    async function cancelAssignment(id) {
+
+        await fetch("/api/shifts/assignment/" + id + "/cancel", {
+            method: "PUT"
+        });
+
+        alert("Cancelled");
+        loadSchedule();
+    }
+
+    loadBranches();
+
+</script>
+
+</body>
+</html>

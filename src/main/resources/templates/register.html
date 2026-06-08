@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            width: 350px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .msg {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>Register</h2>
+
+    <input id="username" placeholder="Username"/>
+    <input id="fullName" placeholder="Full Name"/>
+    <input id="email" placeholder="Email"/>
+    <input id="password" type="password" placeholder="Password"/>
+    <input id="confirmPassword" type="password" placeholder="Confirm Password"/>
+
+    <button onclick="register()">Register</button>
+
+    <div class="msg" id="msg"></div>
+</div>
+
+<script>
+    async function register() {
+
+        const username = document.getElementById("username").value;
+        const fullName = document.getElementById("fullName").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        if(fullName.trim() === ""){
+            document.getElementById("msg").innerText =
+                "Full name is required!";
+            return;
+        }
+        if (password !== confirmPassword) {
+            document.getElementById("msg").innerText = "Passwords do not match!";
+            return;
+        }
+
+        const body = {
+            username: username,
+            fullName: fullName,
+            email: email,
+            password: password
+        };
+
+        try {
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                document.getElementById("msg").innerText = "Error: " + (data.message || "Register failed");
+                return;
+            }
+
+            document.getElementById("msg").innerText = "Register success! Redirecting to login...";
+
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 1500);
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("msg").innerText = "Server error!";
+        }
+    }
+</script>
+
+</body>
+</html>

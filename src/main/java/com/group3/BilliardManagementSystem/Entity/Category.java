@@ -1,6 +1,5 @@
 package com.group3.BilliardManagementSystem.Entity;
 
-import com.group3.BilliardManagementSystem.Entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
