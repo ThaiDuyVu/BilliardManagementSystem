@@ -1,28 +1,185 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập hệ thống</title>
+    <style>
+        /* --- DESIGN SYSTEM TOKENS --- */
+        :root {
+            --primary-color: #4f46e5;      /* Tím Indigo hiện đại */
+            --primary-hover: #4338ca;
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #d1d5db;
+            --border-focus: #4f46e5;
+            --error-color: #ef4444;
+            --success-color: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+        }
+        .register-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
+        /* --- LOGIN CARD --- */
+        .login-container {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            transition: transform 0.2s ease;
+        }
+
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            color: var(--text-main);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        /* --- INPUT FIELDS --- */
+        .input-group {
+            position: relative;
+            margin-bottom: 1.25rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            background-color: #f9fafb;
+            transition: all 0.2s ease-in-out;
+        }
+
+        input:focus {
+            background-color: #fff;
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+        }
+
+        /* --- BUTTON --- */
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            margin-top: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* --- FEEDBACK MESSAGE --- */
+        #msg {
+            margin-top: 1.25rem;
+            font-size: 0.875rem;
+            text-align: center;
+            font-weight: 500;
+            min-height: 20px; /* Tránh giật layout khi hiện thông báo */
+        }
+    </style>
 </head>
 <body>
 
-<h2>Login</h2>
+<div class="login-container">
+    <h2>Quản Lý Câu Lạc Bộ Billiard</h2>
+    <p class="subtitle">Vui lòng đăng nhập vào tài khoản của bạn</p>
 
-<input id="email" placeholder="Email"/>
-<br><br>
+    <div class="input-group">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="name@company.com" autocomplete="email"/>
+    </div>
 
-<input id="password" type="password" placeholder="Password"/>
-<br><br>
+    <div class="input-group">
+        <label for="password">Mật khẩu</label>
+        <input id="password" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
 
-<button onclick="login()">Login</button>
-<p id="msg" style="color:red"></p>
+    <button id="btn-login" onclick="login()">Đăng nhập</button>
+    <p class="register-link">
+        Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
+    </p>
+    <p id="msg"></p>
+</div>
 
 <script>
-
     async function login() {
+        const btnLogin = document.getElementById("btn-login");
+        const msgEl = document.getElementById("msg");
 
         try {
+            console.log("🚀 START LOGIN");
+
+            // Trạng thái Loading UX
+            btnLogin.disabled = true;
+            btnLogin.innerText = "Đang xử lý...";
+            msgEl.innerText = "";
 
             const res = await fetch("/api/auth/login", {
                 method: "POST",
@@ -35,35 +192,79 @@
                 })
             });
 
-            const data = await res.json();
+            console.log("📡 STATUS:", res.status);
 
-            console.log(data);
+            const text = await res.text();
+            console.log("📦 RAW RESPONSE:", text);
 
-            if (!res.ok) {
-                document.getElementById("msg").innerText =
-                    data.message || "Login failed";
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch (e) {
+                console.error("❌ JSON PARSE ERROR:", e);
+                showFeedback("Server trả về không phải JSON", "error");
                 return;
             }
 
+            console.log("✅ PARSED DATA:", data);
+
+            if (!res.ok) {
+                showFeedback(data.message || "Đăng nhập thất bại", "error");
+                return;
+            }
+
+            console.log("🔑 TOKEN:", data.token);
+
+            if (!data.token) {
+                console.error("❌ TOKEN NULL - kiểm tra backend response structure");
+                showFeedback("Không có token từ server", "error");
+                return;
+            }
+
+            // Lưu dữ liệu
             localStorage.setItem("token", data.token);
+            localStorage.setItem("roles", JSON.stringify(data.roles || []));
+            console.log("💾 SAVED TOKEN:", localStorage.getItem("token"));
 
-            document.getElementById("msg").style.color = "green";
-            document.getElementById("msg").innerText =
-                "Login success";
+            showFeedback("Đăng nhập thành công!", "success");
 
+            // ĐIỀU HƯỚNG THEO ROLE
             setTimeout(() => {
-                window.location.href = "/users-ui";
+                const roles = data.roles || [];
+                if (roles.includes("ROLE_ADMIN")) {
+                    window.location.href = "/users-ui";
+                } else if (roles.includes("ROLE_STAFF")) {
+                    window.location.href = "/tables/dashboard";
+                } else {
+                    showFeedback("Tài khoản không có quyền truy cập phù hợp", "error");
+                }
             }, 500);
 
         } catch (error) {
-
-            console.error(error);
-
-            document.getElementById("msg").innerText =
-                "Server error";
+            console.error("💥 LOGIN ERROR:", error);
+            showFeedback("Lỗi kết nối server", "error");
+        } finally {
+            // Hoàn tác trạng thái loading nếu không redirect ngay lập tức
+            if (msgEl.style.color !== "var(--success-color)") {
+                btnLogin.disabled = false;
+                btnLogin.innerText = "Đăng nhập";
+            }
         }
     }
 
+    // Hàm bổ trợ hiển thị thông báo chuẩn UX
+    function showFeedback(text, type) {
+        const msgEl = document.getElementById("msg");
+        msgEl.innerText = text;
+        msgEl.style.color = type === "success" ? "var(--success-color)" : "var(--error-color)";
+
+        // Nếu lỗi, trả lại nút bấm về trạng thái cũ
+        if (type === "error") {
+            const btnLogin = document.getElementById("btn-login");
+            btnLogin.disabled = false;
+            btnLogin.innerText = "Đăng nhập";
+        }
+    }
 </script>
 
 </body>

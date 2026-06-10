@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Layout</title>
+
+    <style>
+        body { margin: 0; font-family: Arial; }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            background: #1f2937;
+            color: white;
+            padding: 12px 20px;
+        }
+
+        .menu a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+    <div class="logo">ADMIN DASHBOARD</div>
+
+    <div class="menu">
+        <a th:href="@{/employee-list}">Employees</a>
+        <a th:href="@{/inventory-dashboard}">Inventory</a>
+        <a th:href="@{/shift-management}">Shifts</a>
+        <a th:href="@{/tables}">Tables</a>
+    </div>
+
+
+</div>
+
+
+</body>
+</html>

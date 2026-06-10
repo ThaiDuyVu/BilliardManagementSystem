@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
  *
  * Once PAID, the invoice is immutable.
  */
+
 @Entity
 @Table(name = "invoices",
     indexes = {

@@ -1,39 +1,266 @@
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-    <title>Users</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users Management</title>
+
+    <script>
+        const roles = JSON.parse(localStorage.getItem("roles") || "[]");
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.href = "/login";
+        }
+
+        if (!roles.includes("ROLE_ADMIN")) {
+            alert("Bạn không có quyền truy cập trang này!");
+            window.location.href = "/login";
+        }
+    </script>
+
+    <style>
+        /* --- HỆ THỐNG MÀU CHUẨN MODERN MINIMALIST --- */
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-body: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        /* ========================= */
+        /* 🔥 DASHBOARD TOPBAR START */
+        /* ========================= */
+        .topbar {
+            background:#1f2937;
+            color:white;
+            padding:12px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .topbar a {
+            color:white;
+            margin-right:10px;
+            text-decoration:none;
+            font-size: 0.95rem;
+        }
+
+        .topbar a:hover {
+            text-decoration: underline;
+        }
+        /* ========================= */
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            max-width: 1300px;
+            margin: 24px auto 0 auto;
+            padding: 0 24px;
+            color: var(--text-main);
+        }
+
+        /* --- PHÂN BỐ CỤC KHÔNG GIAN --- */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        /* --- THIẾT KẾ CARD CHỨA NỘI DUNG --- */
+        .panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        h2 { font-size: 1.3rem; margin: 0; font-weight: 700; color: var(--text-main); }
+
+        /* --- NÚT BẤM --- */
+        button {
+            padding: 10px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: white;
+            background-color: var(--primary);
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+
+        /* --- BẢNG DỮ LIỆU (TABLE) --- */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background-color: #f3f4f6; }
+
+        /* --- FALLBACK JSON --- */
+        .json-output {
+            background-color: #1f2937;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+        }
+
+        .error-text { color: var(--danger); font-weight: 600; }
+    </style>
 </head>
+
 <body>
+<div class="topbar">
+    <div class="logo"><b>ADMIN</b></div>
+    <div class="menu">
+        <a href="/employee-list">Employees</a>
+        <a href="/employee-create">Add Employee</a>
+        <a href="/shift-management">Shifts</a>
+        <a href="/assign-shift">assign-Shifts</a>
+        <a href="/inventory/dashboard">Inventory</a>
+        <a href="/inventory/report">Report</a>
+        <a href="/users-ui">Users</a>
+    </div>
+</div>
 
-<h2>User List</h2>
+<h1>USER MANAGEMENT</h1>
 
-<button onclick="loadUsers()">Load Users</button>
+<div class="container">
+    <div class="panel">
+        <div class="panel-header">
+            <h2>System Users List</h2>
+            <button onclick="loadUsers()">Load Users Data</button>
+        </div>
 
-<pre id="result"></pre>
+        <div id="result">
+            <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+                Nhấn "Load Users Data" để hiển thị danh sách tài khoản.
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     async function loadUsers() {
+        const resultDiv = document.getElementById("result");
+        resultDiv.innerHTML = '<div style="text-align:center; padding: 20px;">Đang tải dữ liệu...</div>';
 
-        const token = localStorage.getItem("token");
+        try {
+            const res = await fetch("/api/users", {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                }
+            });
 
-        const res = await fetch("/api/users", {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token
+            if (!res.ok) {
+                resultDiv.innerHTML = `<p class="error-text">Error fetching data: ${res.status}</p>`;
+                return;
             }
-        });
 
-        if (!res.ok) {
-            document.getElementById("result").innerText =
-                "Error: " + res.status;
-            return;
+            const data = await res.json();
+
+            // Tự động tạo bảng nếu dữ liệu là dạng Mảng (Array)
+            if (Array.isArray(data) && data.length > 0) {
+                let html = `<div class="table-wrapper"><table><thead><tr>`;
+
+                // Lấy Keys từ object đầu tiên để làm Tiêu đề cột
+                const keys = Object.keys(data[0]);
+                keys.forEach(key => {
+                    html += `<th>${key}</th>`;
+                });
+
+                html += `</tr></thead><tbody>`;
+
+                // Điền dữ liệu vào các hàng
+                data.forEach(row => {
+                    html += `<tr>`;
+                    keys.forEach(key => {
+                        let value = row[key];
+                        // Nếu value là object/array thì format lại cho dễ nhìn
+                        if (typeof value === 'object' && value !== null) {
+                            value = JSON.stringify(value);
+                        }
+                        html += `<td>${value !== null ? value : '-'}</td>`;
+                    });
+                    html += `</tr>`;
+                });
+
+                html += `</tbody></table></div>`;
+                resultDiv.innerHTML = html;
+            }
+            // Nếu không phải mảng, hoặc mảng rỗng
+            else if (Array.isArray(data) && data.length === 0) {
+                resultDiv.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px 0;">Hệ thống hiện chưa có tài khoản nào.</div>';
+            }
+            // Fallback: in ra JSON đẹp mắt nếu data là dạng object đơn lẻ
+            else {
+                resultDiv.innerHTML = `<pre class="json-output">${JSON.stringify(data, null, 2)}</pre>`;
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+            resultDiv.innerHTML = `<p class="error-text">Lỗi hệ thống: Không thể kết nối tới server.</p>`;
         }
-
-        const data = await res.json();
-
-        document.getElementById("result").innerText =
-            JSON.stringify(data, null, 2);
     }
+
+    // Tự động tải dữ liệu ngay khi mở trang (Bỏ comment dòng dưới nếu muốn)
+    // window.addEventListener("DOMContentLoaded", loadUsers);
 </script>
 
 </body>

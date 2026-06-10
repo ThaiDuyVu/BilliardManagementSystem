@@ -1,5 +1,6 @@
 package com.group3.BilliardManagementSystem.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -48,6 +49,7 @@ public class Category extends BaseEntity {
     private List<Category> children = new ArrayList<>();
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @JsonIgnore
     @Builder.Default
     private List<Product> products = new ArrayList<>();
 

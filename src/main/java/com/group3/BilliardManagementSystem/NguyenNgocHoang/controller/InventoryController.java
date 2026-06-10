@@ -5,7 +5,7 @@ import com.group3.BilliardManagementSystem.Entity.RevenueReportLog;
 import com.group3.BilliardManagementSystem.Entity.StockMovement;
 import com.group3.BilliardManagementSystem.NguyenNgocHoang.Service.InventoryService;
 import com.group3.BilliardManagementSystem.ThaiDuyVu.Repository.system.BranchRepository;
-import com.group3.BilliardManagementSystem.NguyenNgocHoang.Repository.InventoryItemRepository;
+import com.group3.BilliardManagementSystem.NguyenThiThuyDuong.Repository.InventoryItemRepository;
 import com.group3.BilliardManagementSystem.NguyenNgocHoang.Repository.RevenueReportLogRepository;
 
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Billiard | POS Session</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===== DESIGN SYSTEM LUXURY DARK GOLD ===== */
+        :root {
+            --bg: #050505;
+            --card: #111111;
+            --card-soft: #171717;
+            --gold: #d4af37;
+            --gold-soft: #f1d58a;
+            --cream: #f5e6c8;
+            --text: #f8f3e8;
+            --muted: #a8a29e;
+            --burgundy: #7a1f2b;
+            --border: rgba(212,175,55,.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background:
+                    radial-gradient(circle at 50% 0%, rgba(212,175,55,0.10), transparent 28%),
+                    radial-gradient(circle at 100% 20%, rgba(122,31,43,0.10), transparent 26%),
+                    linear-gradient(180deg, #090909 0%, #050505 100%);
+            color: var(--text);
+            font-family: "Manrope", "Inter", sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Lớp lưới ẩn phía sau nền */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background-image:
+                    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+            background-size: 42px 42px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            height: 78px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(3,3,3,.88);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 12px 34px rgba(0,0,0,.48);
+        }
+
+        .navbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* NÚT TRỞ VỀ STYLE LUXURY */
+        .back-btn {
+            background: rgba(212, 175, 55, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            color: var(--gold-soft);
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: "Manrope", sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 0.15);
+            border-color: var(--gold);
+            color: var(--text);
+            transform: translateX(-2px);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.1);
+        }
+
+        .navbar-brand {
+            font-family: "Playfair Display", serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            color: var(--gold-soft);
+            text-transform: uppercase;
+        }
+
+        .navbar-right {
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: .4px;
+            color: rgba(245,230,200,.72);
+        }
+
+        /* ===== MAIN POS LAYOUT ===== */
+        .pos-container {
+            display: flex;
+            gap: 24px;
+            padding: 32px;
+            flex: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .right {
+            width: 460px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-shrink: 0;
+        }
+
+        /* ===== LUXURY BOX / PANEL ===== */
+        .box {
+            background: linear-gradient(180deg, #161616, #0d0d0d);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 16px 44px rgba(0,0,0,.44), inset 0 1px 0 rgba(255,255,255,.05);
+        }
+
+        h2, h3 {
+            margin-top: 0;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2 {
+            font-size: 22px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+            letter-spacing: -0.5px;
+        }
+
+        h2::before {
+            content: "MENU";
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--gold-soft);
+            background: rgba(212,175,55,0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: "Inter", sans-serif;
+        }
+
+        h3 {
+            font-size: 18px;
+            margin-bottom: 18px;
+            color: var(--gold-soft);
+        }
+
+        /* ===== PRODUCT GRID & CARD ===== */
+        #productList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .product {
+            background: var(--card-soft);
+            border: 1px solid rgba(212,175,55,.1);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product:hover {
+            transform: translateY(-4px);
+            border-color: rgba(212,175,55,.4px);
+            box-shadow: 0 12px 24px rgba(212,175,55,0.08);
+            background: #1c1c1c;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-bottom: 1px solid rgba(212,175,55,.08);
+            transition: transform 0.3s ease;
+        }
+
+        .product:hover .product-image {
+            transform: scale(1.03);
+        }
+
+        .product-desc {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--cream);
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--gold-soft);
+        }
+
+        /* ===== SESSION INFO DETAIL ===== */
+        .session-info-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .info-row b, .info-row span:last-child {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        #sessionInfo {
+            font-family: "Playfair Display", serif;
+            font-size: 18px;
+            color: var(--gold-soft);
+            letter-spacing: 0.5px;
+        }
+
+        .badge-live {
+            background: rgba(212,175,55,0.12);
+            border: 1px solid rgba(212,175,55,0.25);
+            color: var(--gold-soft);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        /* ===== CURRENT ORDER / CART ===== */
+        #orderItems {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--muted);
+            font-style: italic;
+            font-size: 14px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(212,175,55,0.08);
+            padding: 12px 0;
+        }
+
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+
+        .cart-item-info b {
+            color: var(--cream);
+            font-size: 14px;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .cart-item-info span {
+            color: var(--gold-soft);
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        /* ===== QUANTITY GROUP CONTROLS ===== */
+        .qty-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #080808;
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(212,175,55,0.1);
+        }
+
+        .qty-group span {
+            font-weight: 800;
+            font-size: 14px;
+            min-width: 24px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .qty-btn {
+            width: 26px;
+            height: 26px;
+            border: 1px solid rgba(212,175,55,0.2);
+            border-radius: 7px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            transition: all 0.15s ease;
+        }
+
+        .plus {
+            background: linear-gradient(180deg, #d4af37, #a67c1b);
+            color: #111;
+        }
+
+        .minus {
+            background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+            color: var(--text);
+        }
+
+        .delete {
+            background: linear-gradient(180deg, #8f2230, #5e111b);
+            color: white;
+            border-color: rgba(212,175,55,0.1);
+        }
+
+        .qty-btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.15);
+        }
+
+        /* ===== BILLING BLOCK ===== */
+        hr {
+            border: none;
+            border-top: 1px solid rgba(212,175,55,0.15);
+            margin: 16px 0;
+        }
+
+        .money-line {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .money-line span:last-child {
+            color: var(--text);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .grand-total {
+            margin-top: 14px;
+            padding-top: 4px;
+        }
+
+        .grand-total span:first-child {
+            color: var(--cream);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .grand-total span:last-child {
+            color: var(--gold-soft);
+            font-size: 24px;
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(212,175,55,0.25);
+        }
+
+        /* ===== BUTTON CHECKOUT ===== */
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            cursor: pointer;
+            border: 1px solid #f1d58a;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #d4af37, #a67c1b);
+            color: #111;
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(212,175,55,0.15);
+            transition: all 0.2s ease;
+        }
+
+        .checkout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212,175,55,0.25);
+            filter: brightness(1.08);
+        }
+
+        /* Scrollbar tinh tế */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.2); border-radius: 999px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(212,175,55,0.4); }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .pos-container { flex-direction: column; padding: 16px; }
+            .right { width: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="navbar-left">
+        <button class="back-btn" onclick="window.location.href = '/tables/dashboard';">
+            &#8592; Trở về
+        </button>
+        <div class="navbar-brand">CORE BILLIARD</div>
+    </div>
+    <div class="navbar-right">POS Terminal Session</div>
+</nav>
+
+<div class="pos-container">
+    <div class="left">
+        <div class="box">
+            <h2>Danh sách sản phẩm</h2>
+            <div id="productList">Đang tải cấu trúc thực đơn...</div>
+        </div>
+    </div>
+
+    <div class="right">
+        <div class="box">
+            <h3>Thông tin phiên</h3>
+            <div class="session-info-wrap">
+                <div class="info-row">
+                    <span>Tên khu vực / Bàn:</span>
+                    <span id="sessionInfo">Đang tải...</span>
+                </div>
+                <div class="info-row">
+                    <span>Thời gian sử dụng:</span>
+                    <div>
+                        <span id="timer" class="badge-live">0</span>
+                        <span style="font-weight: 700; margin-left: 4px;">phút</span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <span>Tiền bàn hiện tại:</span>
+                    <span><span id="tableMoney">0</span> VNĐ</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="box">
+            <h3>Đơn hàng hiện tại</h3>
+
+            <div id="orderItems">
+                <div class="cart-empty">Chưa có sản phẩm nào được chọn</div>
+            </div>
+
+            <hr>
+
+            <div class="money-line">
+                <span>Tiền món ăn / Dịch vụ</span>
+                <span id="foodTotal">0</span>
+            </div>
+
+            <div class="money-line">
+                <span>Tiền dịch vụ bàn</span>
+                <span id="tableTotal">0</span>
+            </div>
+
+            <hr>
+
+            <div class="money-line grand-total">
+                <span>Tổng thanh toán</span>
+                <span><span id="grandTotal">0</span> VNĐ</span>
+            </div>
+
+            <br>
+
+            <button class="checkout-btn" onclick="checkout()">
+                Xuất hóa đơn & Thanh toán
+            </button>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+
+    const sessionId = [[${sessionId}]];
+    let orderId = null;
+    const token = localStorage.getItem("token");
+
+    function authHeaders() {
+        return {
+            "Content-Type":"application/json",
+            "Authorization":"Bearer " + token
+        };
+    }
+
+    async function init(){
+        await loadSession();
+        await loadOrder();
+        await loadProducts();
+        startMoneyTimer();
+    }
+
+    /* ================= SESSION ================= */
+    async function loadSession(){
+        const res = await fetch(`/api/pos/session/${sessionId}`, {
+            headers: authHeaders()
+        });
+
+        const data = await res.json();
+
+        document.getElementById("sessionInfo").innerText =
+            `Bàn ${data.tableCode} - ${data.status}`;
+    }
+
+    /* ================= ORDER ================= */
+    async function loadOrder(){
+        const res = await fetch(`/api/pos/order/${sessionId}`, {
+            headers: authHeaders()
+        });
+
+        const data = await res.json();
+
+        orderId = data.orderId;
+        renderOrder(data);
+    }
+
+    /* ================= PRODUCTS ================= */
+    async function loadProducts() {
+        const res = await fetch("/api/products", {
+            headers: authHeaders()
+        });
+
+        const products = await res.json();
+
+        document.getElementById("productList").innerHTML =
+            products.map(p => `
+            <div class="product" onclick="addToOrder(${p.id})">
+                <img
+                    src="${p.imageUrl}"
+                    alt="${p.name}"
+                    class="product-image"
+                    onerror="this.src='/images/no-image.png'"
+                >
+                <div class="product-desc">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">${Number(p.sellingPrice).toLocaleString()} đ</div>
+                </div>
+            </div>
+        `).join("");
+    }
+
+    /* ================= ADD ITEM ================= */
+    async function addToOrder(productId){
+
+        const res = await fetch(`/api/pos/order/${orderId}/item`, {
+            method:"POST",
+            headers:authHeaders(),
+            body:JSON.stringify({
+                productId,
+                quantity:1
+            })
+        });
+
+        const data = await res.json();
+        renderOrder(data);
+    }
+
+    /* ================= INCREASE ================= */
+    async function increase(productId){
+
+        const res = await fetch(
+            `/api/pos/order/${orderId}/item/increase?productId=${productId}`,
+            {
+                method:"PUT",
+                headers:authHeaders()
+            }
+        );
+
+        if(!res.ok){
+            console.error(await res.text());
+            return;
+        }
+
+        const data = await res.json();
+        renderOrder(data);
+    }
+
+    /* ================= DECREASE ================= */
+    async function decrease(productId){
+
+        const res = await fetch(
+            `/api/pos/order/${orderId}/item/decrease?productId=${productId}`,
+            {
+                method:"PUT",
+                headers:authHeaders()
+            }
+        );
+
+        if(!res.ok){
+            console.error(await res.text());
+            return;
+        }
+
+        const data = await res.json();
+        renderOrder(data);
+    }
+
+    /* ================= REMOVE ================= */
+    async function removeItem(productId){
+
+        const res = await fetch(
+            `/api/pos/order/${orderId}/item?productId=${productId}`,
+            {
+                method:"DELETE",
+                headers:authHeaders()
+            }
+        );
+
+        if(!res.ok){
+            console.error(await res.text());
+            return;
+        }
+
+        const data = await res.json();
+        renderOrder(data);
+    }
+
+    /* ================= RENDER ================= */
+    function renderOrder(order){
+
+        const container = document.getElementById("orderItems");
+
+        if(!order.items || order.items.length === 0){
+            container.innerHTML = `<div class="cart-empty">Chưa có sản phẩm nào được chọn</div>`;
+            document.getElementById("foodTotal").innerText = "0";
+            updateGrandTotal();
+            return;
+        }
+
+        container.innerHTML = order.items.map(i => `
+        <div class="cart-item">
+
+            <div class="cart-item-info">
+                <b>${i.productName}</b>
+                <span>${Number(i.subtotal).toLocaleString()} đ</span>
+            </div>
+
+            <div class="qty-group">
+
+                <button class="qty-btn minus"
+                        onclick="decrease(${i.productId})">-</button>
+
+                <span>${i.quantity}</span>
+
+                <button class="qty-btn plus"
+                        onclick="increase(${i.productId})">+</button>
+
+                <button class="qty-btn delete"
+                        onclick="removeItem(${i.productId})">×</button>
+
+            </div>
+
+        </div>
+    `).join("");
+
+        document.getElementById("foodTotal").innerText =
+            Number(order.totalAmount).toLocaleString();
+
+        updateGrandTotal();
+    }
+
+    /* ================= GRAND TOTAL ================= */
+    function updateGrandTotal(){
+
+        const tableMoney =
+            parseFloat(document.getElementById("tableMoney").innerText.replaceAll(",","").replaceAll(".","")) || 0;
+
+        const foodMoney =
+            parseFloat(document.getElementById("foodTotal").innerText.replaceAll(",","").replaceAll(".","")) || 0;
+
+        document.getElementById("tableTotal").innerText =
+            tableMoney.toLocaleString();
+
+        document.getElementById("grandTotal").innerText =
+            (tableMoney + foodMoney).toLocaleString();
+    }
+
+    /* ================= TIMER ================= */
+    function startMoneyTimer(){
+
+        setInterval(async () => {
+
+            const res = await fetch(
+                `/api/pos/session/${sessionId}/money`,
+                { headers:authHeaders() }
+            );
+
+            const data = await res.json();
+
+            document.getElementById("timer").innerText =
+                data.playMinutes;
+
+            document.getElementById("tableMoney").innerText =
+                Number(data.totalPlayAmount).toLocaleString();
+
+            updateGrandTotal();
+
+        },1000);
+    }
+
+    /* ================= CHECKOUT ================= */
+    function checkout() {
+        // Thay vì gửi lệnh ngay, ta hiện modal
+        const tableMoney = document.getElementById("tableTotal").innerText;
+        const foodMoney = document.getElementById("foodTotal").innerText;
+        const grandTotal = document.getElementById("grandTotal").innerText;
+
+        // 2. Điền vào Modal
+        document.getElementById("modalTableMoney").innerText = tableMoney + " đ";
+        document.getElementById("modalFoodMoney").innerText = foodMoney + " đ";
+        document.getElementById("modalGrandTotal").innerText = grandTotal + " đ";
+
+        // 3. Hiện Modal
+        document.getElementById('paymentModal').style.display = 'flex';
+        document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    async function confirmPayment(method) {
+        // Đóng modal
+        document.getElementById('paymentModal').style.display = 'none';
+
+        try {
+            const res = await fetch(`/api/pos/checkout/${sessionId}`, {
+                method: "POST",
+                headers: {
+                    ...authHeaders(),
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ paymentMethod: method }) // Gửi phương thức đã chọn
+            });
+
+            if (!res.ok) throw new Error("Thanh toán thất bại");
+
+            const invoice = await res.json();
+            alert("Thanh toán thành công! Mã: " + invoice.invoiceNumber);
+            window.location.href = "/tables/dashboard";
+        } catch (error) {
+            alert("Lỗi: " + error.message);
+        }
+    }
+    init();
+
+</script>
+<div id="paymentModal" style="display:none; position:fixed; inset:0; z-index:1000; align-items:center; justify-content:center; background:rgba(0,0,0,0.9);">
+    <div class="box" style="width:450px; text-align:left;">
+        <h3 style="color:var(--gold-soft); text-align:center; margin-bottom: 20px;">Xác nhận thanh toán</h3>
+
+        <div style="border: 1px solid var(--border); padding: 15px; border-radius: 10px; background: #0d0d0d;">
+            <div class="money-line"><span>Tiền bàn:</span> <span id="modalTableMoney">0</span></div>
+            <div class="money-line"><span>Tiền dịch vụ:</span> <span id="modalFoodMoney">0</span></div>
+            <hr>
+            <div class="money-line" style="font-size: 18px; font-weight: 800;">
+                <span>TỔNG CỘNG:</span>
+                <span id="modalGrandTotal" style="color: var(--gold-soft);">0</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <button class="checkout-btn" onclick="confirmPayment('CASH')" style="flex: 1;">TIỀN MẶT</button>
+            <button class="checkout-btn" onclick="confirmPayment('BANK_TRANSFER')" style="flex: 1;">CHUYỂN KHOẢN</button>
+        </div>
+
+        <button onclick="document.getElementById('paymentModal').style.display='none'"
+                style="width: 100%; margin-top:15px; background:none; border:none; color:var(--muted); cursor:pointer; text-decoration: underline;">
+            Hủy bỏ
+        </button>
+    </div>
+</div>
+</body>
+
+</html>

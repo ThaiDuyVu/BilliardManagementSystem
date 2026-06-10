@@ -1,7 +1,7 @@
 package com.group3.BilliardManagementSystem.NguyenNgocHoang.Service;
 
 import com.group3.BilliardManagementSystem.Entity.*;
-import com.group3.BilliardManagementSystem.NguyenNgocHoang.Repository.InventoryItemRepository;
+import com.group3.BilliardManagementSystem.NguyenThiThuyDuong.Repository.InventoryItemRepository;
 import com.group3.BilliardManagementSystem.NguyenNgocHoang.Repository.RevenueReportLogRepository;
 import com.group3.BilliardManagementSystem.NguyenNgocHoang.Repository.StockMovementRepository;
 import lombok.RequiredArgsConstructor;

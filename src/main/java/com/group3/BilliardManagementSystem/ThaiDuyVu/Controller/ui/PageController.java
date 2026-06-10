@@ -6,36 +6,57 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
-    @GetMapping("/login")
-    public String login() {
-        return "login";
+    // DASHBOARD ROOT
+    @GetMapping("/admin")
+    public String adminDashboard() {
+        return "admin-dashboard";
     }
+
+    // EMPLOYEE MODULE
+    @GetMapping("/employee-list")
+    public String employeeList() {
+        return "employee-list";
+    }
+
+    @GetMapping("/employee-create")
+    public String employeeCreate() {
+        return "employee-create";
+    }
+
+    // SHIFT MODULE
     @GetMapping("/shift-management")
     public String shiftManagement() {
         return "shift-management";
     }
-    @GetMapping("/users-ui")
-    public String users() {
-        return "users-ui";
-    }
-    @GetMapping("/employee-create")
-    public String create() {
-        return "employee-create";
-    }
-    @GetMapping("/register")
-    public String register() {
-        return "register";
-    }
-    @GetMapping("/employee-list")
-    public String list() {
-        return "employee-list";
+
+    @GetMapping("/shift-schedule")
+    public String shiftSchedule() {
+        return "shift-schedule";
     }
     @GetMapping("/assign-shift")
     public String assignShift() {
         return "assign-shift";
     }
-    @GetMapping("/shift-schedule")
-    public String view() {
-        return "shift-schedule";
+    // AUTH PAGES
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
+
+    // USERS
+    @GetMapping("/users-ui")
+    public String users() {
+        return "users-ui";
+    }
+
+    // TABLES
+    @GetMapping("/tables")
+    public String tables() {
+        return "tables";
     }
 }

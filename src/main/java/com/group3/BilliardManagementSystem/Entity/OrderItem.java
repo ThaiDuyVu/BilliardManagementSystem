@@ -52,7 +52,8 @@ public class OrderItem extends BaseEntity {
 
     @Column(name = "subtotal", nullable = false, precision = 15, scale = 2)
     private BigDecimal subtotal; // = (unitPrice * quantity) - discountAmount
-
+    @Column(name = "product_name", nullable = false, length = 100)
+    private String productName;
     @Column(name = "note", length = 255)
     private String note; // E.g., "no ice", "extra spicy"
 }

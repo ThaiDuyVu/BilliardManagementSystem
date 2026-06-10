@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
-public class BilliardManagementSystemApplication {
+public class 	BilliardManagementSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BilliardManagementSystemApplication.class, args);

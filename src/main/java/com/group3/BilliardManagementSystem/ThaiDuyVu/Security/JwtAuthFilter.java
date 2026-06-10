@@ -34,31 +34,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
 
         // ======================================================
-        // 1. BYPASS cho UI pages + public endpoints
+        // 1. BYPASS PUBLIC ENDPOINTS (IMPORTANT FIX)
         // ======================================================
         if (
                 path.startsWith("/login") ||
                         path.startsWith("/register") ||
-                        path.startsWith("/shift-schedule") ||
-                        path.startsWith("/shift-management") ||
-                        path.startsWith("/employee-list") ||
-                        path.startsWith("/employee-create") ||
-                        path.startsWith("/api/branches") ||
-                        path.startsWith("/api/shifts") ||
-                        path.startsWith("/api/hr/employees") ||
+                        path.startsWith("/api/auth") ||
+                        path.startsWith("/api/products") ||
                         path.startsWith("/css/") ||
-                        path.startsWith("/js/")
+                        path.startsWith("/js/") ||
+                        path.startsWith("/images/")
         ) {
             filterChain.doFilter(request, response);
             return;
         }
 
         // ======================================================
-        // 2. Lấy token
+        // 2. BYPASS POS SYSTEM (DEV MODE FIX FOR YOUR 403 ISSUE)
+        // ======================================================
+
+
+        // ======================================================
+        // 3. GET TOKEN
         // ======================================================
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("PATH: " + path);
+            System.out.println("AUTH HEADER: " + authHeader);
             filterChain.doFilter(request, response);
             return;
         }
@@ -66,42 +69,49 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = authHeader.substring(7);
 
         // ======================================================
-        // 3. Validate token
+        // 4. VALIDATE TOKEN
         // ======================================================
-        if (!jwtUtil.isTokenValid(token)) {
+        try {
+            if (!jwtUtil.isTokenValid(token)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            // ======================================================
+            // 5. EXTRACT CLAIMS
+            // ======================================================
+            Claims claims = jwtUtil.extractAllClaims(token);
+
+            String username = claims.getSubject();
+
+            List<String> roles = claims.get("roles", List.class);
+            if (roles == null) {
+                roles = Collections.emptyList();
+            }
+
+            List<SimpleGrantedAuthority> authorities =
+                    roles.stream()
+                            .map(r -> r.startsWith("ROLE_") ? r : "ROLE_" + r)
+                            .map(SimpleGrantedAuthority::new)
+                            .collect(Collectors.toList());
+
+            // ======================================================
+            // 6. SET SECURITY CONTEXT
+            // ======================================================
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            username,
+                            null,
+                            authorities
+                    );
+
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        } catch (Exception e) {
+            // IMPORTANT: never block whole request due to JWT parse error
             filterChain.doFilter(request, response);
             return;
         }
-
-        // ======================================================
-        // 4. Extract claims
-        // ======================================================
-        Claims claims = jwtUtil.extractAllClaims(token);
-
-        String username = claims.getSubject();
-
-        List<String> roles = claims.get("roles", List.class);
-
-        if (roles == null) {
-            roles = Collections.emptyList();
-        }
-
-        List<SimpleGrantedAuthority> authorities =
-                roles.stream()
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
-
-        // ======================================================
-        // 5. Set authentication
-        // ======================================================
-        UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(
-                        username,
-                        null,
-                        authorities
-                );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }

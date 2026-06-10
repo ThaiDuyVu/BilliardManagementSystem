@@ -2,119 +2,299 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Employee</title>
+
+    <style>
+        /* --- HỆ THỐNG MÀU CHUẨN MODERN MINIMALIST --- */
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-body: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --border-focus: #4f46e5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        /* ========================= */
+        /* 🔥 DASHBOARD TOPBAR START */
+        /* ========================= */
+        .topbar {
+            background:#1f2937;
+            color:white;
+            padding:12px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .topbar a {
+            color:white;
+            margin-right:10px;
+            text-decoration:none;
+            font-size: 0.95rem;
+        }
+
+        .topbar a:hover {
+            text-decoration: underline;
+        }
+        /* ========================= */
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            max-width: 1300px;
+            margin: 24px auto 0 auto;
+            padding: 0 24px;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        /* --- PHÂN BỐ CỤC KHÔNG GIAN --- */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        /* --- THIẾT KẾ CARD CHỨA NỘI DUNG --- */
+        .panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+            width: 100%;
+            max-width: 500px; /* Form tạo nên để độ rộng vừa phải nhìn sẽ đẹp hơn */
+        }
+
+        h2 { font-size: 1.3rem; margin-top: 0; margin-bottom: 24px; font-weight: 700; color: var(--text-main); text-align: center;}
+
+        /* --- THÀNH PHẦN INPUT & SELECT --- */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--border-focus);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* --- HỆ THỐNG NÚT BẤM (BUTTONS) --- */
+        button {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: white;
+            background-color: var(--primary);
+            margin-top: 24px;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+
+        #message {
+            margin-top: 16px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--success);
+            font-size: 0.95rem;
+        }
+    </style>
 </head>
 
 <body>
 
-<h2>Create Employee</h2>
+<div class="topbar">
+    <div class="logo"><b>ADMIN</b></div>
+    <div class="menu">
+        <a href="/employee-list">Employees</a>
+        <a href="/employee-create">Add Employee</a>
+        <a href="/shift-management">Shifts</a>
+        <a href="/assign-shift">assign-Shifts</a>
+        <a href="/inventory/dashboard">Inventory</a>
+        <a href="/inventory/report">Report</a>
+        <a href="/users-ui">Users</a>
+    </div>
+</div>
 
-<!-- USER DROPDOWN -->
-<select id="userId"></select>
+<h1>NEW EMPLOYEE REGISTRATION</h1>
 
-<!-- BRANCH DROPDOWN -->
-<select id="branchId"></select>
+<div class="container">
+    <div class="panel">
+        <h2>Employee Details</h2>
 
-<!-- EMPLOYMENT TYPE -->
-<select id="employmentType">
-    <option value="FULL_TIME">FULL_TIME</option>
-    <option value="PART_TIME">PART_TIME</option>
-</select>
+        <label for="userId">Select User Account</label>
+        <select id="userId"></select>
 
-<!-- SALARY -->
-<input id="baseSalary" type="number" placeholder="Salary"/>
+        <label for="branchId">Assign to Branch</label>
+        <select id="branchId"></select>
 
-<button onclick="createEmployee()">Create</button>
+        <label for="employmentType">Employment Type</label>
+        <select id="employmentType">
+            <option value="FULL_TIME">FULL_TIME</option>
+            <option value="PART_TIME">PART_TIME</option>
+        </select>
 
-<p id="message"></p>
+        <label for="baseSalary">Base Salary</label>
+        <input id="baseSalary" type="number" placeholder="Enter salary amount..."/>
+
+        <button onclick="createEmployee()">Create Employee</button>
+
+        <p id="message"></p>
+    </div>
+</div>
 
 <script>
+    let token = null;
 
-    async function loadUsers() {
+    function getToken() {
+        token = localStorage.getItem("token");
 
-        const token = localStorage.getItem("token");
-
-        const res = await fetch("/api/users/not-employee", {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        });
-
-        const users = await res.json();
-
-        const userSelect = document.getElementById("userId");
-
-        userSelect.innerHTML = "";
-
-        users.forEach(u => {
-            userSelect.innerHTML += `
-            <option value="${u.id}">
-                ${u.username} - ${u.email}
-            </option>
-        `;
-        });
-    }
-
-    // Load branches
-    async function loadBranches() {
-
-        const token = localStorage.getItem("token");
-
-        const res = await fetch("/api/branches", {
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        });
-
-        const branches = await res.json();
-
-        const branchSelect = document.getElementById("branchId");
-
-        branchSelect.innerHTML = "";
-
-        branches.forEach(b => {
-            branchSelect.innerHTML += `
-            <option value="${b.id}">
-                ${b.name}
-            </option>
-        `;
-        });
-    }
-
-    // CREATE EMPLOYEE
-    async function createEmployee() {
-
-        const token = localStorage.getItem("token");
-
-        const body = {
-            userId: document.getElementById("userId").value,
-            branchId: document.getElementById("branchId").value,
-            employmentType: document.getElementById("employmentType").value,
-            baseSalary: document.getElementById("baseSalary").value
-        };
-
-        const res = await fetch("/api/hr/employees", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + token
-            },
-            body: JSON.stringify(body)
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            document.getElementById("message").innerText = "Error: " + data.message;
-            return;
+        if (!token) {
+            alert("No token. Please login again.");
         }
 
-        document.getElementById("message").innerText =
-            "Created Employee ID: " + data.id;
+        return token;
     }
 
-    loadUsers();
-    loadBranches();
+    async function loadUsers() {
+        try {
+            const res = await fetch("/api/users/not-employee", {
+                headers: {
+                    "Authorization": "Bearer " + getToken()
+                }
+            });
+
+            if (!res.ok) throw new Error("Failed users");
+
+            const users = await res.json();
+
+            const userSelect = document.getElementById("userId");
+
+            userSelect.innerHTML = users.map(u =>
+                `<option value="${u.id}">
+                    ${u.username} - ${u.email}
+                </option>`
+            ).join("");
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("message").innerText = "Load users failed";
+            document.getElementById("message").style.color = "var(--danger)";
+        }
+    }
+
+    async function loadBranches() {
+        try {
+            const res = await fetch("/api/branches", {
+                headers: {
+                    "Authorization": "Bearer " + getToken()
+                }
+            });
+
+            if (!res.ok) throw new Error("Failed branches");
+
+            const branches = await res.json();
+
+            const branchSelect = document.getElementById("branchId");
+
+            branchSelect.innerHTML = branches.map(b =>
+                `<option value="${b.id}">
+                    ${b.name}
+                </option>`
+            ).join("");
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("message").innerText = "Load branches failed";
+            document.getElementById("message").style.color = "var(--danger)";
+        }
+    }
+
+    async function createEmployee() {
+        try {
+
+            const body = {
+                userId: Number(userId.value),
+                branchId: Number(branchId.value),
+                employmentType: employmentType.value,
+                baseSalary: Number(baseSalary.value || 0)
+            };
+
+            const res = await fetch("/api/hr/employees", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + getToken()
+                },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                document.getElementById("message").innerText =
+                    "Error: " + (data.message || "Failed");
+                document.getElementById("message").style.color = "var(--danger)";
+                return;
+            }
+
+            document.getElementById("message").innerText =
+                "Created Employee ID: " + data.id + " successfully!";
+            document.getElementById("message").style.color = "var(--success)";
+
+        } catch (err) {
+            console.error(err);
+            document.getElementById("message").innerText = "Server error";
+            document.getElementById("message").style.color = "var(--danger)";
+        }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+        loadUsers();
+        loadBranches();
+    });
 
 </script>
 

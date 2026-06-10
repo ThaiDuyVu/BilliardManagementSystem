@@ -1,158 +1,362 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shift Management</title>
+
+    <style>
+        /* --- HỆ THỐNG MÀU CHUẨN MODERN MINIMALIST --- */
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-body: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            --border-focus: #4f46e5;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+        }
+
+        /* ========================= */
+        /* 🔥 DASHBOARD TOPBAR START */
+        /* ========================= */
+        .topbar {
+            background:#1f2937;
+            color:white;
+            padding:12px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }
+
+        .topbar a {
+            color:white;
+            margin-right:10px;
+            text-decoration:none;
+            font-size: 0.95rem;
+        }
+
+        .topbar a:hover {
+            text-decoration: underline;
+        }
+        /* ========================= */
+
+        h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            max-width: 1300px;
+            margin: 24px auto 0 auto;
+            padding: 0 24px;
+            color: var(--text-main);
+        }
+
+        /* --- PHÂN BỐ CỤC KHÔNG GIAN --- */
+        .container {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 850px) {
+            .container { flex-direction: column; }
+            .left-panel, .center-panel { width: 100% !important; }
+        }
+
+        /* --- THIẾT KẾ CARD CHỨA NỘI DUNG --- */
+        .panel {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .left-panel { width: 360px; flex-shrink: 0; }
+        .center-panel { flex: 1; min-width: 0; }
+
+        h2 { font-size: 1.3rem; margin-top: 0; margin-bottom: 20px; font-weight: 700; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 12px;}
+
+        /* --- THÀNH PHẦN INPUT & SELECT --- */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+            background-color: #f9fafb;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--border-focus);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .time-row {
+            display: flex;
+            gap: 16px;
+        }
+        .time-row > div { flex: 1; }
+
+        /* --- HỆ THỐNG NÚT BẤM (BUTTONS) --- */
+        button {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            color: white;
+            background-color: var(--primary);
+            margin-top: 20px;
+        }
+
+        button:hover { background-color: var(--primary-hover); }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        .header-actions > div { flex: 1; }
+        .header-actions button { margin-top: 0; width: auto; white-space: nowrap; }
+
+        /* --- DANH SÁCH CA LÀM VIỆC (SHIFT CARDS) --- */
+        .shift-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .shift-card {
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 8px;
+            background: #fafafa;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+            box-sizing: border-box;
+            border-left: 4px solid var(--primary);
+        }
+
+        .shift-card h4 { margin: 0 0 12px 0; font-size: 1.1rem; color: var(--text-main); }
+        .shift-card p { margin: 6px 0; font-size: 0.9rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .shift-card p strong { color: var(--text-main); }
+        .shift-badge { display: inline-block; background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;}
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+            background: #f9fafb;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+
+    </style>
 </head>
 <body>
 
+<div class="topbar">
+    <div class="logo"><b>ADMIN</b></div>
+    <div class="menu">
+        <a href="/employee-list">Employees</a>
+        <a href="/employee-create">Add Employee</a>
+        <a href="/shift-management">Shifts</a>
+        <a href="/assign-shift">assign-Shifts</a>
+        <a href="/inventory/dashboard">Inventory</a>
+        <a href="/inventory/report">Report</a>
+        <a href="/users-ui">Users</a>
+    </div>
+</div>
+
 <h1>SHIFT MANAGEMENT</h1>
 
-<hr>
+<div class="container">
 
-<h2>Create Shift</h2>
+    <div class="panel left-panel">
+        <h2>Create Shift</h2>
 
-<input id="shiftName" placeholder="Shift Name">
-<br><br>
+        <label for="branchSelect">Branch</label>
+        <select id="branchSelect"></select>
 
-<input id="startTime" type="time">
-<br><br>
+        <label for="shiftName">Shift Name</label>
+        <input id="shiftName" placeholder="e.g. Ca Sáng, Ca Tối...">
 
-<input id="endTime" type="time">
-<br><br>
+        <div class="time-row">
+            <div>
+                <label for="startTime">Start Time</label>
+                <input id="startTime" type="time">
+            </div>
+            <div>
+                <label for="endTime">End Time</label>
+                <input id="endTime" type="time">
+            </div>
+        </div>
 
-<input id="maxEmployees" type="number" placeholder="Max Employees">
-<br><br>
+        <label for="maxEmployees">Max Employees</label>
+        <input id="maxEmployees" type="number" placeholder="Enter max limit..." min="1">
 
-<select id="branchSelect"></select>
+        <button onclick="createShift()">Create Shift</button>
+    </div>
 
-<br><br>
+    <div class="panel center-panel">
+        <h2>View Shifts By Branch</h2>
 
-<button onclick="createShift()">
-    Create Shift
-</button>
+        <div class="header-actions">
+            <div>
+                <label for="branchShiftSelect" style="margin-top: 0;">Select Branch</label>
+                <select id="branchShiftSelect" style="margin-bottom: 0;"></select>
+            </div>
+            <button onclick="loadShifts()">Load Shifts</button>
+        </div>
 
-<hr>
+        <div id="shiftList">
+            <div class="no-data">Select a branch and click "Load Shifts" to view data.</div>
+        </div>
+    </div>
 
-<h2>View Shifts By Branch</h2>
-
-<select id="branchShiftSelect"></select>
-
-<button onclick="loadShifts()">
-    Load Shifts
-</button>
-
-<br><br>
-
-<div id="shiftList"></div>
+</div>
 
 <script>
-
+    const token = localStorage.getItem("token");
     async function loadBranches() {
+        try {
+            const res = await fetch("/api/branches", {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+            const branches = await res.json();
 
-        const res = await fetch("/api/branches");
-        const branches = await res.json();
-
-        ["branchSelect", "branchShiftSelect"]
-            .forEach(id => {
-
-                const select =
-                    document.getElementById(id);
-
+            ["branchSelect", "branchShiftSelect"].forEach(id => {
+                const select = document.getElementById(id);
                 select.innerHTML = "";
 
-                branches.forEach(branch => {
+                if(branches.length === 0) {
+                    select.innerHTML = `<option value="">-- No branches found --</option>`;
+                    return;
+                }
 
-                    select.innerHTML += `
-                    <option value="${branch.id}">
-                        ${branch.name}
-                    </option>
-                `;
+                branches.forEach(branch => {
+                    select.innerHTML += `<option value="${branch.id}">${branch.name}</option>`;
                 });
             });
+        } catch (error) {
+            console.error("Lỗi khi tải chi nhánh:", error);
+        }
     }
 
     async function createShift() {
-
         const body = {
-
-            name:
-            document.getElementById("shiftName").value,
-
-            startTime:
-            document.getElementById("startTime").value,
-
-            endTime:
-            document.getElementById("endTime").value,
-
-            maxEmployees:
-                parseInt(
-                    document.getElementById("maxEmployees").value
-                ),
-
-            branchId:
-                parseInt(
-                    document.getElementById("branchSelect").value
-                )
+            name: document.getElementById("shiftName").value,
+            startTime: document.getElementById("startTime").value,
+            endTime: document.getElementById("endTime").value,
+            maxEmployees: parseInt(document.getElementById("maxEmployees").value),
+            branchId: parseInt(document.getElementById("branchSelect").value)
         };
 
-        const res =
-            await fetch("/api/shifts", {
+        if (!body.name || !body.startTime || !body.endTime || isNaN(body.maxEmployees)) {
+            alert("Vui lòng điền đầy đủ thông tin ca làm việc!");
+            return;
+        }
 
+        try {
+            const res = await fetch("/api/shifts", {
                 method: "POST",
-
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + token
                 },
-
                 body: JSON.stringify(body)
             });
 
-        alert(await res.text());
+            alert(await res.text());
+
+            // Tự động tải lại danh sách nếu đang xem cùng chi nhánh vừa tạo
+            const currentViewBranch = document.getElementById("branchShiftSelect").value;
+            if (currentViewBranch == body.branchId) {
+                loadShifts();
+            }
+        } catch (error) {
+            alert("Đã xảy ra lỗi khi tạo ca làm việc.");
+            console.error(error);
+        }
     }
 
     async function loadShifts() {
+        const branchId = document.getElementById("branchShiftSelect").value;
+        if (!branchId) return;
 
-        const branchId =
-            document.getElementById(
-                "branchShiftSelect"
-            ).value;
+        const shiftListDiv = document.getElementById("shiftList");
+        shiftListDiv.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">Đang tải dữ liệu...</div>';
 
-        const res =
-            await fetch(
-                "/api/shifts/branch/" + branchId
-            );
+        try {
+            const res = await fetch("/api/shifts/branch/" + branchId, {
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            });
+            const shifts = await res.json();
 
-        const shifts =
-            await res.json();
+            if (shifts.length === 0) {
+                shiftListDiv.innerHTML = '<div class="no-data">Chi nhánh này hiện chưa có ca làm việc nào.</div>';
+                return;
+            }
 
-        let html = "";
+            let html = '<div class="shift-cards-grid">';
 
-        shifts.forEach(s => {
+            shifts.forEach(s => {
+                html += `
+                <div class="shift-card">
+                    <h4>ID #${s.id} - ${s.name}</h4>
+                    <p><strong>Thời gian:</strong> <span class="shift-badge">${s.startTime} → ${s.endTime}</span></p>
+                    <p><strong>Nhân sự tối đa:</strong> <span>${s.maxEmployees} người</span></p>
+                </div>`;
+            });
 
-            html += `
-            <div>
-                ${s.id}
-                -
-                ${s.name}
-                -
-                ${s.startTime}
-                →
-                ${s.endTime}
-                -
-                Max:
-                ${s.maxEmployees}
-            </div>
-        `;
-        });
+            html += '</div>';
+            shiftListDiv.innerHTML = html;
 
-        document.getElementById("shiftList")
-            .innerHTML = html;
+        } catch (error) {
+            shiftListDiv.innerHTML = '<div class="no-data" style="color: var(--danger);">Lỗi khi tải dữ liệu ca làm việc.</div>';
+            console.error(error);
+        }
     }
 
+    // Khởi chạy khi tải trang
     loadBranches();
-
 </script>
 
 </body>

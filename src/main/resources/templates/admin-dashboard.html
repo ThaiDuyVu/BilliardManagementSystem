@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+
+    <script defer src="/js/dashboard.js"></script>
+
+    <style>
+        body { margin:0; font-family:Arial; }
+        .topbar {
+            display:flex;
+            justify-content:space-between;
+            background:#1f2937;
+            color:white;
+            padding:12px 20px;
+        }
+        .menu a {
+            color:white;
+            margin-right:12px;
+            text-decoration:none;
+        }
+        .content { padding:20px; }
+    </style>
+</head>
+
+<body>
+
+<div class="topbar">
+    <div><b>ADMIN DASHBOARD</b></div>
+
+    <div class="menu">
+        <a href="/employee-list">Employees</a>
+        <a href="/employee-create">Add</a>
+        <a href="/shift-management">Shifts</a>
+        <a href="/tables">Tables</a>
+    </div>
+
+    <div>👤 <span id="username"></span></div>
+</div>
+
+<div class="content">
+    <h2>Welcome Admin</h2>
+</div>
+
+</body>
+</html>
